@@ -1,6 +1,8 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::{program::set_return_data, sysvar};
 
+use adapter_interface::ADAPTER_INTERFACE_VERSION;
+
 use crate::constants::*;
 use crate::routing::route_current_value;
 use crate::error::DispatcherError;
@@ -15,6 +17,7 @@ pub struct CurrentValue<'info> {
     #[account(
         seeds = [ENTRY_SEED, adapter_program.key().as_ref()],
         bump = adapter_entry.bump,
+        constraint = adapter_entry.is_active @ DispatcherError::AdapterInactive,
     )]
     pub adapter_entry: Account<'info, AdapterEntry>,
 
@@ -40,6 +43,11 @@ pub struct CurrentValue<'info> {
 }
 
 pub fn handler<'info>(ctx: Context<'_, '_, '_, 'info, CurrentValue<'info>>) -> Result<()> {
+    require!(
+        ctx.accounts.adapter_entry.interface_version == ADAPTER_INTERFACE_VERSION,
+        DispatcherError::VersionMismatch
+    );
+
     let value = route_current_value(
         &ctx.accounts.adapter_program,
         &ctx.accounts.instructions_sysvar,

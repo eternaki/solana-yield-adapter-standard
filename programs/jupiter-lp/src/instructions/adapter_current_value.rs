@@ -34,7 +34,8 @@ pub struct AdapterCurrentValue<'info> {
     /// CHECK: validated == adapter_state.pool; read for aumUsd.
     #[account(address = adapter_state.pool @ AdapterError::Unauthorized)]
     pub pool: AccountInfo<'info>,
-    /// CHECK: JLP mint; read for total supply.
+    /// CHECK: validated == adapter_state.lp_mint; read for total supply.
+    #[account(address = adapter_state.lp_mint @ AdapterError::Unauthorized)]
     pub lp_token_mint: AccountInfo<'info>,
 }
 

@@ -24,7 +24,11 @@ crates/adapter-interface   shared: header, discriminators, return-data codec,
                            caller verification, canonical errors (both sides import this)
 programs/dispatcher        router + governance registry + Position model (7 instructions)
 programs/kamino-usdc       reference adapter — Kamino Lend USDC reserve (klend CPI)
-tests/fork                 mainnet-fork e2e (bankrun + native validator)
+programs/marginfi-usdc     reference adapter — MarginFi v2 USDC bank
+programs/jupiter-lp        reference adapter — Jupiter Perps JLP pool (multi-custody AUM)
+programs/maple-syrup       reference adapter — syrupUSDC via Orca whirlpool (swap-and-hold)
+programs/drift-if          reference adapter — Drift USDC Insurance Fund staking
+tests/fork                 mainnet-fork e2e on a native solana-test-validator
 scripts                    fork-test runner + fixture generator
 ```
 
@@ -38,7 +42,7 @@ scripts                    fork-test runner + fixture generator
 | `marginfi-usdc` | ✅ `anchor build` | ✅ deposit/withdraw/value round-trip |
 | `jupiter-lp` | ✅ `anchor build` | ✅ add/remove-liquidity round-trip (multi-custody AUM) |
 | `maple-syrup` | ✅ `anchor build` | ✅ swap-and-hold round-trip (Orca whirlpool) |
-| `drift-if` | ✅ `anchor build` | ⏳ written; fork test skipped pending the deployed Drift `initialize_user_stats` discriminator (see test note) |
+| `drift-if` | ✅ `anchor build` | ⏳ adapter complete; discriminators verified vs `@drift-labs/sdk` v2.162.0. Fork test `describe.skip`'d — the deployed Drift bytecode returns `InstructionFallbackNotFound` on `solana-test-validator` 2.2.20 (the bounty-pinned runtime), un-skip on a newer validator. Not an adapter bug. See note in `tests/fork/06-drift-native.ts`. |
 
 ## Devnet
 
@@ -72,20 +76,19 @@ versions that build on the Solana platform-tools rustc (1.84) — newer releases
 ```bash
 anchor build                                   # builds all programs → target/{deploy,idl}
 cargo test -p adapter-interface                # unit tests (discriminators, etc.)
-MAINNET_RPC_URL=<rpc> ./scripts/fork-test.sh   # Kamino mainnet-fork e2e (one command)
+MAINNET_RPC_URL=<rpc> ./scripts/fork-test.sh   # all-adapter mainnet-fork e2e (one command)
 cargo clippy --all-targets -- -D warnings      # lints
 ```
 
-The fork test spins up a local `solana-test-validator` that clones the real Kamino
-USDC-reserve account set from mainnet, then runs the full dispatcher flow —
+The fork test spins up a local `solana-test-validator`, clones the real mainnet account
+sets for all five protocols (Kamino, MarginFi, Jupiter Perps, Orca, Drift), injects
+slot-patched oracle/reserve fixtures, deploys the dispatcher + adapters, then runs the
+full flow for each adapter —
 `initialize_registry → whitelist → open_position → deposit → current_value → withdraw` —
-asserting USDC round-trips through real klend CPIs. `MAINNET_RPC_URL` defaults to public
-mainnet-beta; a private RPC is faster.
+asserting USDC round-trips through the real protocol CPIs. Four adapters pass end-to-end;
+the Drift suite is `describe.skip`'d (see the status table). `MAINNET_RPC_URL` defaults to
+public mainnet-beta; a private RPC is faster.
 
 ## License
 
 MIT — see [`LICENSE`](LICENSE).
-
-## Note on keys
-
-The program keypairs in `target/deploy/*-keypair.json` are **devnet throwaways** committed only so `anchor build` reproduces the exact program IDs in this repo and on devnet. They are NOT upgrade authorities (the devnet upgrade authority is a separate wallet). Regenerate with `anchor keys sync` for your own deployment.

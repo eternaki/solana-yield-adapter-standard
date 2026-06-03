@@ -15,6 +15,14 @@ use crate::state::AdapterState;
 /// unstake cooldown is enforced on-chain; the mainnet-fork patches the spot
 /// market's `unstaking_period` to 0 so request+remove can settle in one call.
 ///
+/// MAINNET LIMITATION: Drift's USDC Insurance Fund has a non-zero `unstaking_period`
+/// (currently ~13 days). On a live deployment this single-tx flow reverts in
+/// `remove_insurance_fund_stake` because the cooldown has not elapsed. A production
+/// Drift adapter must split withdraw into two instructions — `request_remove` (stores
+/// the request timestamp) and, after the cooldown, `remove` (settles USDC) — which is
+/// an adapter-level extension of the standard's single `adapter_withdraw` for
+/// time-locked sources. The one-tx form here is correct only where the cooldown is 0.
+///
 /// Standard prefix (0–3) then Drift tail (4–11):
 /// 4 drift_program, 5 state, 6 spot_market, 7 insurance_fund_stake, 8 user_stats,
 /// 9 insurance_fund_vault, 10 drift_signer, 11 token_program.
@@ -83,7 +91,7 @@ pub fn handler<'info>(
     let amount_out = ctx.accounts.position_usdc_pool.amount.checked_sub(before).ok_or(AdapterError::MathOverflow)?;
 
     let s = &mut ctx.accounts.adapter_state;
-    s.header.total_shares = s.header.total_shares.saturating_sub(shares);
+    s.header.total_shares = s.header.total_shares.checked_sub(shares).ok_or(AdapterError::MathOverflow)?;
 
     set_u64_return(amount_out);
     emit!(AdapterWithdrawEvent {

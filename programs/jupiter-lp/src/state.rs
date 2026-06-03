@@ -15,5 +15,7 @@ pub struct AdapterState {
     pub custody: Pubkey,
     /// Position-owned JLP token account.
     pub lp_token_account: Pubkey,
+    /// JLP mint — pinned at init so `current_value` can't be fed a fake-supply mint.
+    pub lp_mint: Pubkey,
     pub bump: u8,
 }

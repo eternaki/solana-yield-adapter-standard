@@ -104,7 +104,7 @@ pub fn handler<'info>(
     state.header.total_shares = if withdraw_all {
         0
     } else {
-        state.header.total_shares.saturating_sub(shares)
+        state.header.total_shares.checked_sub(shares).ok_or(AdapterError::MathOverflow)?
     };
 
     set_u64_return(amount_out);

@@ -744,6 +744,13 @@
             "type": "pubkey"
           },
           {
+            "name": "lp_mint",
+            "docs": [
+              "JLP mint — pinned at init so `current_value` can't be fed a fake-supply mint."
+            ],
+            "type": "pubkey"
+          },
+          {
             "name": "bump",
             "type": "u8"
           }

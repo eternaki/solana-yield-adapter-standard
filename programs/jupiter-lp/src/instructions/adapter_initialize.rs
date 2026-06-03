@@ -66,6 +66,7 @@ pub fn handler(ctx: Context<AdapterInitialize>, adapter_data: Vec<u8>) -> Result
     state.pool = ctx.accounts.pool.key();
     state.custody = ctx.accounts.custody.key();
     state.lp_token_account = ctx.accounts.lp_token_account.key();
+    state.lp_mint = ctx.accounts.lp_token_mint.key();
     state.bump = ctx.bumps.adapter_state;
     msg!("jupiter-lp init: position={} pool={}", state.header.position, state.pool);
     Ok(())

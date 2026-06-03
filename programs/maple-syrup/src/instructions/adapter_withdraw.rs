@@ -99,7 +99,7 @@ pub fn handler<'info>(
         .ok_or(AdapterError::MathOverflow)?;
 
     let state = &mut ctx.accounts.adapter_state;
-    state.header.total_shares = state.header.total_shares.saturating_sub(shares);
+    state.header.total_shares = state.header.total_shares.checked_sub(shares).ok_or(AdapterError::MathOverflow)?;
 
     set_u64_return(amount_out);
     emit!(AdapterWithdrawEvent {
