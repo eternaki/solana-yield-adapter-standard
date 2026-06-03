@@ -1,0 +1,837 @@
+{
+  "address": "DwqPJD68SpERitR6NNp9AaizEn5W7ERbDArCkPJqwmzq",
+  "metadata": {
+    "name": "jupiter_lp",
+    "version": "1.0.0",
+    "spec": "0.1.0",
+    "description": "Reference yield adapter: Jupiter Perps JLP liquidity pool"
+  },
+  "docs": [
+    "Reference yield adapter for the **Jupiter Perpetuals JLP pool**.",
+    "",
+    "Implements the Solana Yield Adapter Standard v1 (see `docs/SPEC.md`). Deposit",
+    "adds USDC liquidity (`add_liquidity2`) and receives JLP into a position-owned",
+    "account; withdraw burns JLP (`remove_liquidity2`) back to USDC; value =",
+    "JLP balance × pool AUM / JLP supply. Shows the standard generalizes beyond",
+    "lending to an LP/AMM-style source."
+  ],
+  "instructions": [
+    {
+      "name": "adapter_current_value",
+      "docs": [
+        "Return the position's USDC value (JLP balance × pool.aumUsd / JLP supply)."
+      ],
+      "discriminator": [
+        67,
+        200,
+        59,
+        238,
+        163,
+        138,
+        170,
+        179
+      ],
+      "accounts": [
+        {
+          "name": "instructions_sysvar",
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "position"
+        },
+        {
+          "name": "adapter_state",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  97,
+                  112,
+                  116,
+                  101,
+                  114,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  192,
+                  88,
+                  80,
+                  180,
+                  73,
+                  98,
+                  219,
+                  182,
+                  73,
+                  178,
+                  7,
+                  205,
+                  89,
+                  228,
+                  110,
+                  18,
+                  174,
+                  191,
+                  238,
+                  212,
+                  134,
+                  76,
+                  233,
+                  196,
+                  22,
+                  191,
+                  31,
+                  241,
+                  254,
+                  141,
+                  76,
+                  90
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position"
+              }
+            ]
+          }
+        },
+        {
+          "name": "lp_token_account"
+        },
+        {
+          "name": "pool"
+        },
+        {
+          "name": "lp_token_mint"
+        }
+      ],
+      "args": [
+        {
+          "name": "adapter_data",
+          "type": "bytes"
+        }
+      ]
+    },
+    {
+      "name": "adapter_deposit",
+      "docs": [
+        "Add `amount` USDC of liquidity to the JLP pool; returns JLP minted."
+      ],
+      "discriminator": [
+        190,
+        207,
+        72,
+        186,
+        232,
+        106,
+        46,
+        72
+      ],
+      "accounts": [
+        {
+          "name": "instructions_sysvar",
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "position"
+        },
+        {
+          "name": "position_usdc_pool",
+          "writable": true
+        },
+        {
+          "name": "adapter_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  97,
+                  112,
+                  116,
+                  101,
+                  114,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  192,
+                  88,
+                  80,
+                  180,
+                  73,
+                  98,
+                  219,
+                  182,
+                  73,
+                  178,
+                  7,
+                  205,
+                  89,
+                  228,
+                  110,
+                  18,
+                  174,
+                  191,
+                  238,
+                  212,
+                  134,
+                  76,
+                  233,
+                  196,
+                  22,
+                  191,
+                  31,
+                  241,
+                  254,
+                  141,
+                  76,
+                  90
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position"
+              }
+            ]
+          }
+        },
+        {
+          "name": "jupiter_program"
+        },
+        {
+          "name": "transfer_authority"
+        },
+        {
+          "name": "perpetuals"
+        },
+        {
+          "name": "pool",
+          "writable": true
+        },
+        {
+          "name": "custody",
+          "writable": true
+        },
+        {
+          "name": "doves_price"
+        },
+        {
+          "name": "pythnet_price"
+        },
+        {
+          "name": "custody_token_account",
+          "writable": true
+        },
+        {
+          "name": "lp_token_mint",
+          "writable": true
+        },
+        {
+          "name": "lp_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "event_authority"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "adapter_data",
+          "type": "bytes"
+        }
+      ]
+    },
+    {
+      "name": "adapter_initialize",
+      "docs": [
+        "Create the `AdapterState` PDA + the position-owned JLP token account."
+      ],
+      "discriminator": [
+        125,
+        160,
+        35,
+        249,
+        117,
+        179,
+        167,
+        76
+      ],
+      "accounts": [
+        {
+          "name": "instructions_sysvar",
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "position"
+        },
+        {
+          "name": "adapter_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  97,
+                  112,
+                  116,
+                  101,
+                  114,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  192,
+                  88,
+                  80,
+                  180,
+                  73,
+                  98,
+                  219,
+                  182,
+                  73,
+                  178,
+                  7,
+                  205,
+                  89,
+                  228,
+                  110,
+                  18,
+                  174,
+                  191,
+                  238,
+                  212,
+                  134,
+                  76,
+                  233,
+                  196,
+                  22,
+                  191,
+                  31,
+                  241,
+                  254,
+                  141,
+                  76,
+                  90
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position"
+              }
+            ]
+          }
+        },
+        {
+          "name": "rent_payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "lp_token_mint"
+        },
+        {
+          "name": "lp_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "position"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "lp_token_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "pool"
+        },
+        {
+          "name": "custody"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        }
+      ],
+      "args": [
+        {
+          "name": "adapter_data",
+          "type": "bytes"
+        }
+      ]
+    },
+    {
+      "name": "adapter_withdraw",
+      "docs": [
+        "Remove `shares` JLP of liquidity; returns USDC out."
+      ],
+      "discriminator": [
+        121,
+        55,
+        72,
+        46,
+        185,
+        100,
+        173,
+        236
+      ],
+      "accounts": [
+        {
+          "name": "instructions_sysvar",
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "position"
+        },
+        {
+          "name": "position_usdc_pool",
+          "writable": true
+        },
+        {
+          "name": "adapter_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  97,
+                  112,
+                  116,
+                  101,
+                  114,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  192,
+                  88,
+                  80,
+                  180,
+                  73,
+                  98,
+                  219,
+                  182,
+                  73,
+                  178,
+                  7,
+                  205,
+                  89,
+                  228,
+                  110,
+                  18,
+                  174,
+                  191,
+                  238,
+                  212,
+                  134,
+                  76,
+                  233,
+                  196,
+                  22,
+                  191,
+                  31,
+                  241,
+                  254,
+                  141,
+                  76,
+                  90
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position"
+              }
+            ]
+          }
+        },
+        {
+          "name": "jupiter_program"
+        },
+        {
+          "name": "transfer_authority"
+        },
+        {
+          "name": "perpetuals"
+        },
+        {
+          "name": "pool",
+          "writable": true
+        },
+        {
+          "name": "custody",
+          "writable": true
+        },
+        {
+          "name": "doves_price"
+        },
+        {
+          "name": "pythnet_price"
+        },
+        {
+          "name": "custody_token_account",
+          "writable": true
+        },
+        {
+          "name": "lp_token_mint",
+          "writable": true
+        },
+        {
+          "name": "lp_token_account",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "event_authority"
+        }
+      ],
+      "args": [
+        {
+          "name": "shares",
+          "type": "u64"
+        },
+        {
+          "name": "adapter_data",
+          "type": "bytes"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "AdapterState",
+      "discriminator": [
+        88,
+        130,
+        126,
+        170,
+        183,
+        106,
+        151,
+        212
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "AdapterDepositEvent",
+      "discriminator": [
+        240,
+        79,
+        36,
+        190,
+        33,
+        174,
+        160,
+        90
+      ]
+    },
+    {
+      "name": "AdapterValueEvent",
+      "discriminator": [
+        34,
+        18,
+        18,
+        108,
+        55,
+        88,
+        215,
+        10
+      ]
+    },
+    {
+      "name": "AdapterWithdrawEvent",
+      "discriminator": [
+        35,
+        174,
+        25,
+        44,
+        211,
+        160,
+        142,
+        133
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "AdapterDepositEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "position",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount_in",
+            "type": "u64"
+          },
+          {
+            "name": "shares_minted",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AdapterState",
+      "docs": [
+        "Per-position adapter state.",
+        "",
+        "`seeds = [ADAPTER_STATE_SEED, jupiter_lp_program_id, position]`",
+        "",
+        "`header.total_shares` tracks JLP held (the adapter's native share unit)."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "header",
+            "type": {
+              "defined": {
+                "name": "AdapterStateHeader"
+              }
+            }
+          },
+          {
+            "name": "pool",
+            "type": "pubkey"
+          },
+          {
+            "name": "custody",
+            "type": "pubkey"
+          },
+          {
+            "name": "lp_token_account",
+            "docs": [
+              "Position-owned JLP token account."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AdapterStateHeader",
+      "docs": [
+        "The fixed prefix every adapter's state account MUST begin with, so any",
+        "off-chain reader can decode position, ownership, and share count without",
+        "knowing the adapter-specific tail. Embed as the FIRST field of the adapter's",
+        "`#[account]` state struct: `pub struct AdapterState { pub header: AdapterStateHeader, .. }`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "position",
+            "docs": [
+              "The dispatcher `Position` PDA this state backs (the CPI signer)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "adapter_program",
+            "docs": [
+              "This adapter's own program ID."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "created_at",
+            "docs": [
+              "Unix timestamp of initialization."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "total_shares",
+            "docs": [
+              "Adapter-internal shares attributable to this position (NOT the source's",
+              "global supply). Units are adapter-defined (cTokens, LP, stake shares…)."
+            ],
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AdapterValueEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "position",
+            "type": "pubkey"
+          },
+          {
+            "name": "current_value_usdc",
+            "type": "u64"
+          },
+          {
+            "name": "as_of_slot",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AdapterWithdrawEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "position",
+            "type": "pubkey"
+          },
+          {
+            "name": "shares_burned",
+            "type": "u64"
+          },
+          {
+            "name": "amount_out",
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ]
+}

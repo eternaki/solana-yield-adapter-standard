@@ -1,0 +1,706 @@
+{
+  "address": "5C6BQ9tJdyUjP8Dz1MxHXtYF8EuXX8nXZPLwZvwc6d93",
+  "metadata": {
+    "name": "marginfi_usdc",
+    "version": "1.0.0",
+    "spec": "0.1.0",
+    "description": "Reference yield adapter: MarginFi USDC bank"
+  },
+  "docs": [
+    "Reference yield adapter for a **MarginFi v2 USDC bank**.",
+    "",
+    "Implements the Solana Yield Adapter Standard v1 (see `docs/SPEC.md`). The",
+    "position's funds live in a MarginFi account PDA owned (as authority) by the",
+    "dispatcher `Position`; deposit/withdraw CPI MarginFi's lending instructions,",
+    "and value is read from the account's asset shares × the bank's share value."
+  ],
+  "instructions": [
+    {
+      "name": "adapter_current_value",
+      "docs": [
+        "Return the position's USDC value (asset_shares × bank.asset_share_value)."
+      ],
+      "discriminator": [
+        67,
+        200,
+        59,
+        238,
+        163,
+        138,
+        170,
+        179
+      ],
+      "accounts": [
+        {
+          "name": "instructions_sysvar",
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "position"
+        },
+        {
+          "name": "adapter_state",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  97,
+                  112,
+                  116,
+                  101,
+                  114,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  62,
+                  69,
+                  254,
+                  43,
+                  180,
+                  80,
+                  123,
+                  8,
+                  49,
+                  151,
+                  109,
+                  98,
+                  153,
+                  208,
+                  189,
+                  133,
+                  67,
+                  56,
+                  134,
+                  134,
+                  222,
+                  14,
+                  237,
+                  134,
+                  54,
+                  74,
+                  186,
+                  42,
+                  79,
+                  82,
+                  205,
+                  218
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position"
+              }
+            ]
+          }
+        },
+        {
+          "name": "marginfi_account"
+        },
+        {
+          "name": "bank"
+        }
+      ],
+      "args": [
+        {
+          "name": "adapter_data",
+          "type": "bytes"
+        }
+      ]
+    },
+    {
+      "name": "adapter_deposit",
+      "docs": [
+        "Deposit `amount` USDC into the MarginFi bank; returns the amount as shares."
+      ],
+      "discriminator": [
+        190,
+        207,
+        72,
+        186,
+        232,
+        106,
+        46,
+        72
+      ],
+      "accounts": [
+        {
+          "name": "instructions_sysvar",
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "position"
+        },
+        {
+          "name": "position_usdc_pool",
+          "writable": true
+        },
+        {
+          "name": "adapter_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  97,
+                  112,
+                  116,
+                  101,
+                  114,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  62,
+                  69,
+                  254,
+                  43,
+                  180,
+                  80,
+                  123,
+                  8,
+                  49,
+                  151,
+                  109,
+                  98,
+                  153,
+                  208,
+                  189,
+                  133,
+                  67,
+                  56,
+                  134,
+                  134,
+                  222,
+                  14,
+                  237,
+                  134,
+                  54,
+                  74,
+                  186,
+                  42,
+                  79,
+                  82,
+                  205,
+                  218
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position"
+              }
+            ]
+          }
+        },
+        {
+          "name": "marginfi_program"
+        },
+        {
+          "name": "marginfi_group"
+        },
+        {
+          "name": "marginfi_account",
+          "writable": true
+        },
+        {
+          "name": "bank",
+          "writable": true
+        },
+        {
+          "name": "liquidity_vault",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "adapter_data",
+          "type": "bytes"
+        }
+      ]
+    },
+    {
+      "name": "adapter_initialize",
+      "docs": [
+        "Create the `AdapterState` PDA and the MarginFi account PDA (authority = position)."
+      ],
+      "discriminator": [
+        125,
+        160,
+        35,
+        249,
+        117,
+        179,
+        167,
+        76
+      ],
+      "accounts": [
+        {
+          "name": "instructions_sysvar",
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "position",
+          "docs": [
+            "dispatcher's invoke_signed) + adapter_state seed."
+          ]
+        },
+        {
+          "name": "adapter_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  97,
+                  112,
+                  116,
+                  101,
+                  114,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  62,
+                  69,
+                  254,
+                  43,
+                  180,
+                  80,
+                  123,
+                  8,
+                  49,
+                  151,
+                  109,
+                  98,
+                  153,
+                  208,
+                  189,
+                  133,
+                  67,
+                  56,
+                  134,
+                  134,
+                  222,
+                  14,
+                  237,
+                  134,
+                  54,
+                  74,
+                  186,
+                  42,
+                  79,
+                  82,
+                  205,
+                  218
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position"
+              }
+            ]
+          }
+        },
+        {
+          "name": "rent_payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "marginfi_program"
+        },
+        {
+          "name": "marginfi_group"
+        },
+        {
+          "name": "marginfi_account",
+          "writable": true
+        },
+        {
+          "name": "bank"
+        }
+      ],
+      "args": [
+        {
+          "name": "adapter_data",
+          "type": "bytes"
+        }
+      ]
+    },
+    {
+      "name": "adapter_withdraw",
+      "docs": [
+        "Withdraw `shares` USDC base units (or all, if `shares >= booked`); returns USDC out."
+      ],
+      "discriminator": [
+        121,
+        55,
+        72,
+        46,
+        185,
+        100,
+        173,
+        236
+      ],
+      "accounts": [
+        {
+          "name": "instructions_sysvar",
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "position"
+        },
+        {
+          "name": "position_usdc_pool",
+          "writable": true
+        },
+        {
+          "name": "adapter_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  97,
+                  112,
+                  116,
+                  101,
+                  114,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  62,
+                  69,
+                  254,
+                  43,
+                  180,
+                  80,
+                  123,
+                  8,
+                  49,
+                  151,
+                  109,
+                  98,
+                  153,
+                  208,
+                  189,
+                  133,
+                  67,
+                  56,
+                  134,
+                  134,
+                  222,
+                  14,
+                  237,
+                  134,
+                  54,
+                  74,
+                  186,
+                  42,
+                  79,
+                  82,
+                  205,
+                  218
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position"
+              }
+            ]
+          }
+        },
+        {
+          "name": "marginfi_program"
+        },
+        {
+          "name": "marginfi_group"
+        },
+        {
+          "name": "marginfi_account",
+          "writable": true
+        },
+        {
+          "name": "bank",
+          "writable": true
+        },
+        {
+          "name": "bank_liquidity_vault_authority"
+        },
+        {
+          "name": "liquidity_vault",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        },
+        {
+          "name": "oracle"
+        }
+      ],
+      "args": [
+        {
+          "name": "shares",
+          "type": "u64"
+        },
+        {
+          "name": "adapter_data",
+          "type": "bytes"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "AdapterState",
+      "discriminator": [
+        88,
+        130,
+        126,
+        170,
+        183,
+        106,
+        151,
+        212
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "AdapterDepositEvent",
+      "discriminator": [
+        240,
+        79,
+        36,
+        190,
+        33,
+        174,
+        160,
+        90
+      ]
+    },
+    {
+      "name": "AdapterValueEvent",
+      "discriminator": [
+        34,
+        18,
+        18,
+        108,
+        55,
+        88,
+        215,
+        10
+      ]
+    },
+    {
+      "name": "AdapterWithdrawEvent",
+      "discriminator": [
+        35,
+        174,
+        25,
+        44,
+        211,
+        160,
+        142,
+        133
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "AdapterDepositEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "position",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount_in",
+            "type": "u64"
+          },
+          {
+            "name": "shares_minted",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AdapterState",
+      "docs": [
+        "Per-position adapter state.",
+        "",
+        "`seeds = [ADAPTER_STATE_SEED, marginfi_usdc_program_id, position]`",
+        "",
+        "`header.total_shares` tracks the booked USDC principal (MarginFi shares are",
+        "I80F48 and don't fit a u64); the live value is read from the MarginFi account."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "header",
+            "type": {
+              "defined": {
+                "name": "AdapterStateHeader"
+              }
+            }
+          },
+          {
+            "name": "marginfi_group",
+            "type": "pubkey"
+          },
+          {
+            "name": "marginfi_account",
+            "type": "pubkey"
+          },
+          {
+            "name": "bank",
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AdapterStateHeader",
+      "docs": [
+        "The fixed prefix every adapter's state account MUST begin with, so any",
+        "off-chain reader can decode position, ownership, and share count without",
+        "knowing the adapter-specific tail. Embed as the FIRST field of the adapter's",
+        "`#[account]` state struct: `pub struct AdapterState { pub header: AdapterStateHeader, .. }`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "position",
+            "docs": [
+              "The dispatcher `Position` PDA this state backs (the CPI signer)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "adapter_program",
+            "docs": [
+              "This adapter's own program ID."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "created_at",
+            "docs": [
+              "Unix timestamp of initialization."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "total_shares",
+            "docs": [
+              "Adapter-internal shares attributable to this position (NOT the source's",
+              "global supply). Units are adapter-defined (cTokens, LP, stake shares…)."
+            ],
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AdapterValueEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "position",
+            "type": "pubkey"
+          },
+          {
+            "name": "current_value_usdc",
+            "type": "u64"
+          },
+          {
+            "name": "as_of_slot",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AdapterWithdrawEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "position",
+            "type": "pubkey"
+          },
+          {
+            "name": "shares_burned",
+            "type": "u64"
+          },
+          {
+            "name": "amount_out",
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ]
+}

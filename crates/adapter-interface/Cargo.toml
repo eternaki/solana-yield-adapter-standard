@@ -1,0 +1,12 @@
+[package]
+name = "adapter-interface"
+version = "1.0.0"
+description = "Shared types and CPI helpers for the Solana Yield Adapter Standard"
+edition = "2021"
+
+[lib]
+crate-type = ["lib"]
+name = "adapter_interface"
+
+[dependencies]
+anchor-lang = "0.31.1"

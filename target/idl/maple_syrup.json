@@ -1,0 +1,832 @@
+{
+  "address": "3Y1AddXDAnzw14UYpjLByWSJYTncMj7uFNJN9Egwzqh9",
+  "metadata": {
+    "name": "maple_syrup",
+    "version": "1.0.0",
+    "spec": "0.1.0",
+    "description": "Reference yield adapter: Maple syrupUSDC (swap-and-hold via Orca)"
+  },
+  "docs": [
+    "Reference yield adapter for **Maple syrupUSDC** (a yield-bearing, price-accruing",
+    "stablecoin). On Solana syrupUSDC arrives via Chainlink CCIP — there is no native",
+    "permissionless deposit program — so \"depositing into Maple\" means acquiring",
+    "syrupUSDC, which this adapter does by swapping USDC↔syrupUSDC through the deepest",
+    "Orca Whirlpool. It proves the standard also covers **swap-and-hold** RWA-style",
+    "sources, not just protocols with their own deposit instruction.",
+    "",
+    "deposit = swap USDC→syrupUSDC; withdraw = swap back; value = syrupUSDC balance ×",
+    "the pool's spot price (from `sqrt_price`)."
+  ],
+  "instructions": [
+    {
+      "name": "adapter_current_value",
+      "docs": [
+        "Return the position's USDC value (syrupUSDC balance × pool spot price)."
+      ],
+      "discriminator": [
+        67,
+        200,
+        59,
+        238,
+        163,
+        138,
+        170,
+        179
+      ],
+      "accounts": [
+        {
+          "name": "instructions_sysvar",
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "position"
+        },
+        {
+          "name": "adapter_state",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  97,
+                  112,
+                  116,
+                  101,
+                  114,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  37,
+                  168,
+                  145,
+                  19,
+                  63,
+                  158,
+                  88,
+                  250,
+                  163,
+                  47,
+                  240,
+                  156,
+                  1,
+                  127,
+                  28,
+                  97,
+                  111,
+                  216,
+                  98,
+                  143,
+                  123,
+                  109,
+                  225,
+                  13,
+                  167,
+                  14,
+                  56,
+                  42,
+                  24,
+                  141,
+                  151,
+                  192
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position"
+              }
+            ]
+          }
+        },
+        {
+          "name": "syrup_token_account"
+        },
+        {
+          "name": "whirlpool"
+        }
+      ],
+      "args": [
+        {
+          "name": "adapter_data",
+          "type": "bytes"
+        }
+      ]
+    },
+    {
+      "name": "adapter_deposit",
+      "docs": [
+        "Swap `amount` USDC → syrupUSDC; returns syrupUSDC received."
+      ],
+      "discriminator": [
+        190,
+        207,
+        72,
+        186,
+        232,
+        106,
+        46,
+        72
+      ],
+      "accounts": [
+        {
+          "name": "instructions_sysvar",
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "position"
+        },
+        {
+          "name": "position_usdc_pool",
+          "docs": [
+            "USDC pool (Orca token_owner_account_b)."
+          ],
+          "writable": true
+        },
+        {
+          "name": "adapter_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  97,
+                  112,
+                  116,
+                  101,
+                  114,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  37,
+                  168,
+                  145,
+                  19,
+                  63,
+                  158,
+                  88,
+                  250,
+                  163,
+                  47,
+                  240,
+                  156,
+                  1,
+                  127,
+                  28,
+                  97,
+                  111,
+                  216,
+                  98,
+                  143,
+                  123,
+                  109,
+                  225,
+                  13,
+                  167,
+                  14,
+                  56,
+                  42,
+                  24,
+                  141,
+                  151,
+                  192
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position"
+              }
+            ]
+          }
+        },
+        {
+          "name": "orca_program"
+        },
+        {
+          "name": "whirlpool",
+          "writable": true
+        },
+        {
+          "name": "syrup_token_account",
+          "docs": [
+            "syrupUSDC account (Orca token_owner_account_a)."
+          ],
+          "writable": true
+        },
+        {
+          "name": "vault_a",
+          "writable": true
+        },
+        {
+          "name": "vault_b",
+          "writable": true
+        },
+        {
+          "name": "tick_array_0",
+          "writable": true
+        },
+        {
+          "name": "tick_array_1",
+          "writable": true
+        },
+        {
+          "name": "tick_array_2",
+          "writable": true
+        },
+        {
+          "name": "oracle",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "adapter_data",
+          "type": "bytes"
+        }
+      ]
+    },
+    {
+      "name": "adapter_initialize",
+      "docs": [
+        "Create the `AdapterState` PDA + the position-owned syrupUSDC token account."
+      ],
+      "discriminator": [
+        125,
+        160,
+        35,
+        249,
+        117,
+        179,
+        167,
+        76
+      ],
+      "accounts": [
+        {
+          "name": "instructions_sysvar",
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "position"
+        },
+        {
+          "name": "adapter_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  97,
+                  112,
+                  116,
+                  101,
+                  114,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  37,
+                  168,
+                  145,
+                  19,
+                  63,
+                  158,
+                  88,
+                  250,
+                  163,
+                  47,
+                  240,
+                  156,
+                  1,
+                  127,
+                  28,
+                  97,
+                  111,
+                  216,
+                  98,
+                  143,
+                  123,
+                  109,
+                  225,
+                  13,
+                  167,
+                  14,
+                  56,
+                  42,
+                  24,
+                  141,
+                  151,
+                  192
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position"
+              }
+            ]
+          }
+        },
+        {
+          "name": "rent_payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "syrup_mint"
+        },
+        {
+          "name": "syrup_token_account",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "position"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "syrup_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "whirlpool"
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        }
+      ],
+      "args": [
+        {
+          "name": "adapter_data",
+          "type": "bytes"
+        }
+      ]
+    },
+    {
+      "name": "adapter_withdraw",
+      "docs": [
+        "Swap `shares` syrupUSDC → USDC; returns USDC received."
+      ],
+      "discriminator": [
+        121,
+        55,
+        72,
+        46,
+        185,
+        100,
+        173,
+        236
+      ],
+      "accounts": [
+        {
+          "name": "instructions_sysvar",
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "position"
+        },
+        {
+          "name": "position_usdc_pool",
+          "writable": true
+        },
+        {
+          "name": "adapter_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  97,
+                  112,
+                  116,
+                  101,
+                  114,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  37,
+                  168,
+                  145,
+                  19,
+                  63,
+                  158,
+                  88,
+                  250,
+                  163,
+                  47,
+                  240,
+                  156,
+                  1,
+                  127,
+                  28,
+                  97,
+                  111,
+                  216,
+                  98,
+                  143,
+                  123,
+                  109,
+                  225,
+                  13,
+                  167,
+                  14,
+                  56,
+                  42,
+                  24,
+                  141,
+                  151,
+                  192
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position"
+              }
+            ]
+          }
+        },
+        {
+          "name": "orca_program"
+        },
+        {
+          "name": "whirlpool",
+          "writable": true
+        },
+        {
+          "name": "syrup_token_account",
+          "writable": true
+        },
+        {
+          "name": "vault_a",
+          "writable": true
+        },
+        {
+          "name": "vault_b",
+          "writable": true
+        },
+        {
+          "name": "tick_array_0",
+          "writable": true
+        },
+        {
+          "name": "tick_array_1",
+          "writable": true
+        },
+        {
+          "name": "tick_array_2",
+          "writable": true
+        },
+        {
+          "name": "oracle",
+          "writable": true
+        },
+        {
+          "name": "token_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "shares",
+          "type": "u64"
+        },
+        {
+          "name": "adapter_data",
+          "type": "bytes"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "AdapterState",
+      "discriminator": [
+        88,
+        130,
+        126,
+        170,
+        183,
+        106,
+        151,
+        212
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "AdapterDepositEvent",
+      "discriminator": [
+        240,
+        79,
+        36,
+        190,
+        33,
+        174,
+        160,
+        90
+      ]
+    },
+    {
+      "name": "AdapterValueEvent",
+      "discriminator": [
+        34,
+        18,
+        18,
+        108,
+        55,
+        88,
+        215,
+        10
+      ]
+    },
+    {
+      "name": "AdapterWithdrawEvent",
+      "discriminator": [
+        35,
+        174,
+        25,
+        44,
+        211,
+        160,
+        142,
+        133
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "AdapterDepositEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "position",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount_in",
+            "type": "u64"
+          },
+          {
+            "name": "shares_minted",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AdapterState",
+      "docs": [
+        "Per-position adapter state.",
+        "",
+        "`seeds = [ADAPTER_STATE_SEED, maple_syrup_program_id, position]`",
+        "",
+        "`header.total_shares` tracks syrupUSDC held (the adapter's native share unit)."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "header",
+            "type": {
+              "defined": {
+                "name": "AdapterStateHeader"
+              }
+            }
+          },
+          {
+            "name": "whirlpool",
+            "docs": [
+              "The Orca whirlpool used to swap USDC↔syrupUSDC."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "syrup_token_account",
+            "docs": [
+              "Position-owned syrupUSDC token account."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AdapterStateHeader",
+      "docs": [
+        "The fixed prefix every adapter's state account MUST begin with, so any",
+        "off-chain reader can decode position, ownership, and share count without",
+        "knowing the adapter-specific tail. Embed as the FIRST field of the adapter's",
+        "`#[account]` state struct: `pub struct AdapterState { pub header: AdapterStateHeader, .. }`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "position",
+            "docs": [
+              "The dispatcher `Position` PDA this state backs (the CPI signer)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "adapter_program",
+            "docs": [
+              "This adapter's own program ID."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "created_at",
+            "docs": [
+              "Unix timestamp of initialization."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "total_shares",
+            "docs": [
+              "Adapter-internal shares attributable to this position (NOT the source's",
+              "global supply). Units are adapter-defined (cTokens, LP, stake shares…)."
+            ],
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AdapterValueEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "position",
+            "type": "pubkey"
+          },
+          {
+            "name": "current_value_usdc",
+            "type": "u64"
+          },
+          {
+            "name": "as_of_slot",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AdapterWithdrawEvent",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "position",
+            "type": "pubkey"
+          },
+          {
+            "name": "shares_burned",
+            "type": "u64"
+          },
+          {
+            "name": "amount_out",
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ]
+}

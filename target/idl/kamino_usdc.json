@@ -1,0 +1,872 @@
+{
+  "address": "BSwbiwogeLmYLYXfYb3t4WWNDD3x5tJHCZyZJLVRLuf9",
+  "metadata": {
+    "name": "kamino_usdc",
+    "version": "1.0.0",
+    "spec": "0.1.0",
+    "description": "Reference yield adapter: Kamino Lend USDC reserve"
+  },
+  "docs": [
+    "Reference yield adapter for **Kamino Lend (klend) USDC reserve**.",
+    "",
+    "Implements the Solana Yield Adapter Standard v1 (see `docs/SPEC.md`). The",
+    "dispatcher CPIs all four instructions; every one verifies the caller is the",
+    "dispatcher via the instructions sysvar (`adapter_interface::verify_caller_is_dispatcher`).",
+    "Use this program as the copy-paste template for new adapters",
+    "(`docs/BUILD-YOUR-OWN-ADAPTER.md`)."
+  ],
+  "instructions": [
+    {
+      "name": "adapter_current_value",
+      "docs": [
+        "Return the position's current USDC value via return data + event."
+      ],
+      "discriminator": [
+        67,
+        200,
+        59,
+        238,
+        163,
+        138,
+        170,
+        179
+      ],
+      "accounts": [
+        {
+          "name": "instructions_sysvar",
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "position"
+        },
+        {
+          "name": "adapter_state",
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  97,
+                  112,
+                  116,
+                  101,
+                  114,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  155,
+                  58,
+                  31,
+                  217,
+                  81,
+                  191,
+                  221,
+                  3,
+                  200,
+                  1,
+                  166,
+                  227,
+                  62,
+                  1,
+                  238,
+                  99,
+                  3,
+                  67,
+                  72,
+                  105,
+                  36,
+                  79,
+                  206,
+                  54,
+                  5,
+                  66,
+                  207,
+                  64,
+                  135,
+                  11,
+                  237,
+                  44
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position"
+              }
+            ]
+          }
+        },
+        {
+          "name": "reserve",
+          "writable": true
+        },
+        {
+          "name": "lending_market"
+        },
+        {
+          "name": "scope_prices"
+        },
+        {
+          "name": "klend_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "adapter_data",
+          "type": "bytes"
+        }
+      ]
+    },
+    {
+      "name": "adapter_deposit",
+      "docs": [
+        "Deposit `amount` USDC into the Kamino reserve; returns `shares_minted`."
+      ],
+      "discriminator": [
+        190,
+        207,
+        72,
+        186,
+        232,
+        106,
+        46,
+        72
+      ],
+      "accounts": [
+        {
+          "name": "instructions_sysvar",
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "position",
+          "docs": [
+            "propagates from the dispatcher's invoke_signed)."
+          ]
+        },
+        {
+          "name": "position_usdc_pool",
+          "docs": [
+            "Source USDC token account owned by the Position PDA (klend `userSourceLiquidity`)."
+          ],
+          "writable": true
+        },
+        {
+          "name": "adapter_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  97,
+                  112,
+                  116,
+                  101,
+                  114,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  155,
+                  58,
+                  31,
+                  217,
+                  81,
+                  191,
+                  221,
+                  3,
+                  200,
+                  1,
+                  166,
+                  227,
+                  62,
+                  1,
+                  238,
+                  99,
+                  3,
+                  67,
+                  72,
+                  105,
+                  36,
+                  79,
+                  206,
+                  54,
+                  5,
+                  66,
+                  207,
+                  64,
+                  135,
+                  11,
+                  237,
+                  44
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position"
+              }
+            ]
+          }
+        },
+        {
+          "name": "reserve",
+          "writable": true
+        },
+        {
+          "name": "lending_market"
+        },
+        {
+          "name": "lending_market_authority"
+        },
+        {
+          "name": "reserve_liquidity_mint"
+        },
+        {
+          "name": "reserve_liquidity_supply",
+          "writable": true
+        },
+        {
+          "name": "reserve_collateral_mint",
+          "writable": true
+        },
+        {
+          "name": "collateral_vault",
+          "docs": [
+            "Position-owned collateral account (klend `userDestinationCollateral`)."
+          ],
+          "writable": true
+        },
+        {
+          "name": "collateral_token_program"
+        },
+        {
+          "name": "liquidity_token_program"
+        },
+        {
+          "name": "scope_prices"
+        },
+        {
+          "name": "klend_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        },
+        {
+          "name": "adapter_data",
+          "type": "bytes"
+        }
+      ]
+    },
+    {
+      "name": "adapter_initialize",
+      "docs": [
+        "Create the per-position `AdapterState` PDA + the position-owned collateral",
+        "(cToken) account. CPI'd by the dispatcher's `open_position`."
+      ],
+      "discriminator": [
+        125,
+        160,
+        35,
+        249,
+        117,
+        179,
+        167,
+        76
+      ],
+      "accounts": [
+        {
+          "name": "instructions_sysvar",
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "position"
+        },
+        {
+          "name": "adapter_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  97,
+                  112,
+                  116,
+                  101,
+                  114,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  155,
+                  58,
+                  31,
+                  217,
+                  81,
+                  191,
+                  221,
+                  3,
+                  200,
+                  1,
+                  166,
+                  227,
+                  62,
+                  1,
+                  238,
+                  99,
+                  3,
+                  67,
+                  72,
+                  105,
+                  36,
+                  79,
+                  206,
+                  54,
+                  5,
+                  66,
+                  207,
+                  64,
+                  135,
+                  11,
+                  237,
+                  44
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position"
+              }
+            ]
+          }
+        },
+        {
+          "name": "rent_payer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        },
+        {
+          "name": "reserve",
+          "docs": [
+            "reserve↔collateral-mint binding at deposit time."
+          ]
+        },
+        {
+          "name": "reserve_collateral_mint",
+          "docs": [
+            "Reserve collateral mint (cToken) — derives the position's collateral ATA."
+          ]
+        },
+        {
+          "name": "collateral_vault",
+          "docs": [
+            "Position-owned collateral account; authority is the Position PDA so",
+            "deposit/withdraw use one consistent signer."
+          ],
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "account",
+                "path": "position"
+              },
+              {
+                "kind": "const",
+                "value": [
+                  6,
+                  221,
+                  246,
+                  225,
+                  215,
+                  101,
+                  161,
+                  147,
+                  217,
+                  203,
+                  225,
+                  70,
+                  206,
+                  235,
+                  121,
+                  172,
+                  28,
+                  180,
+                  133,
+                  237,
+                  95,
+                  91,
+                  55,
+                  145,
+                  58,
+                  140,
+                  245,
+                  133,
+                  126,
+                  255,
+                  0,
+                  169
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "reserve_collateral_mint"
+              }
+            ],
+            "program": {
+              "kind": "const",
+              "value": [
+                140,
+                151,
+                37,
+                143,
+                78,
+                36,
+                137,
+                241,
+                187,
+                61,
+                16,
+                41,
+                20,
+                142,
+                13,
+                131,
+                11,
+                90,
+                19,
+                153,
+                218,
+                255,
+                16,
+                132,
+                4,
+                142,
+                123,
+                216,
+                219,
+                233,
+                248,
+                89
+              ]
+            }
+          }
+        },
+        {
+          "name": "token_program",
+          "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+        },
+        {
+          "name": "associated_token_program",
+          "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+        }
+      ],
+      "args": [
+        {
+          "name": "adapter_data",
+          "type": "bytes"
+        }
+      ]
+    },
+    {
+      "name": "adapter_withdraw",
+      "docs": [
+        "Redeem `shares` cTokens back into USDC; returns `amount_out`."
+      ],
+      "discriminator": [
+        121,
+        55,
+        72,
+        46,
+        185,
+        100,
+        173,
+        236
+      ],
+      "accounts": [
+        {
+          "name": "instructions_sysvar",
+          "address": "Sysvar1nstructions1111111111111111111111111"
+        },
+        {
+          "name": "position"
+        },
+        {
+          "name": "position_usdc_pool",
+          "docs": [
+            "Destination USDC token account owned by the Position PDA (klend `userDestinationLiquidity`)."
+          ],
+          "writable": true
+        },
+        {
+          "name": "adapter_state",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  97,
+                  100,
+                  97,
+                  112,
+                  116,
+                  101,
+                  114,
+                  95,
+                  115,
+                  116,
+                  97,
+                  116,
+                  101
+                ]
+              },
+              {
+                "kind": "const",
+                "value": [
+                  155,
+                  58,
+                  31,
+                  217,
+                  81,
+                  191,
+                  221,
+                  3,
+                  200,
+                  1,
+                  166,
+                  227,
+                  62,
+                  1,
+                  238,
+                  99,
+                  3,
+                  67,
+                  72,
+                  105,
+                  36,
+                  79,
+                  206,
+                  54,
+                  5,
+                  66,
+                  207,
+                  64,
+                  135,
+                  11,
+                  237,
+                  44
+                ]
+              },
+              {
+                "kind": "account",
+                "path": "position"
+              }
+            ]
+          }
+        },
+        {
+          "name": "reserve",
+          "writable": true
+        },
+        {
+          "name": "lending_market"
+        },
+        {
+          "name": "lending_market_authority"
+        },
+        {
+          "name": "reserve_liquidity_mint"
+        },
+        {
+          "name": "reserve_liquidity_supply",
+          "writable": true
+        },
+        {
+          "name": "reserve_collateral_mint",
+          "writable": true
+        },
+        {
+          "name": "collateral_vault",
+          "docs": [
+            "Position-owned collateral account (klend `userSourceCollateral`)."
+          ],
+          "writable": true
+        },
+        {
+          "name": "collateral_token_program"
+        },
+        {
+          "name": "liquidity_token_program"
+        },
+        {
+          "name": "scope_prices"
+        },
+        {
+          "name": "klend_program"
+        }
+      ],
+      "args": [
+        {
+          "name": "shares",
+          "type": "u64"
+        },
+        {
+          "name": "adapter_data",
+          "type": "bytes"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "AdapterState",
+      "discriminator": [
+        88,
+        130,
+        126,
+        170,
+        183,
+        106,
+        151,
+        212
+      ]
+    }
+  ],
+  "events": [
+    {
+      "name": "AdapterDepositEvent",
+      "discriminator": [
+        240,
+        79,
+        36,
+        190,
+        33,
+        174,
+        160,
+        90
+      ]
+    },
+    {
+      "name": "AdapterValueEvent",
+      "discriminator": [
+        34,
+        18,
+        18,
+        108,
+        55,
+        88,
+        215,
+        10
+      ]
+    },
+    {
+      "name": "AdapterWithdrawEvent",
+      "discriminator": [
+        35,
+        174,
+        25,
+        44,
+        211,
+        160,
+        142,
+        133
+      ]
+    }
+  ],
+  "types": [
+    {
+      "name": "AdapterDepositEvent",
+      "docs": [
+        "Emitted by `adapter_deposit` (spec §adapter_deposit)."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "position",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount_in",
+            "type": "u64"
+          },
+          {
+            "name": "shares_minted",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AdapterState",
+      "docs": [
+        "Per-position adapter state PDA.",
+        "",
+        "`seeds = [ADAPTER_STATE_SEED, kamino_usdc_program_id, position]`",
+        "",
+        "Begins with the standard `AdapterStateHeader` (so any reader can decode",
+        "position/ownership/shares without knowing this adapter), followed by the",
+        "Kamino-specific tail."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "header",
+            "docs": [
+              "Standard header — MUST stay first (spec §Adapter State Account)."
+            ],
+            "type": {
+              "defined": {
+                "name": "AdapterStateHeader"
+              }
+            }
+          },
+          {
+            "name": "kamino_reserve",
+            "docs": [
+              "The klend reserve this position deposits into (e.g. main-market USDC)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "collateral_vault",
+            "docs": [
+              "Position-owned token account holding the reserve collateral mint (cUSDC)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "bump",
+            "docs": [
+              "PDA bump."
+            ],
+            "type": "u8"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AdapterStateHeader",
+      "docs": [
+        "The fixed prefix every adapter's state account MUST begin with, so any",
+        "off-chain reader can decode position, ownership, and share count without",
+        "knowing the adapter-specific tail. Embed as the FIRST field of the adapter's",
+        "`#[account]` state struct: `pub struct AdapterState { pub header: AdapterStateHeader, .. }`."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "position",
+            "docs": [
+              "The dispatcher `Position` PDA this state backs (the CPI signer)."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "adapter_program",
+            "docs": [
+              "This adapter's own program ID."
+            ],
+            "type": "pubkey"
+          },
+          {
+            "name": "created_at",
+            "docs": [
+              "Unix timestamp of initialization."
+            ],
+            "type": "i64"
+          },
+          {
+            "name": "total_shares",
+            "docs": [
+              "Adapter-internal shares attributable to this position (NOT the source's",
+              "global supply). Units are adapter-defined (cTokens, LP, stake shares…)."
+            ],
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AdapterValueEvent",
+      "docs": [
+        "Emitted by `adapter_current_value` (spec §adapter_current_value)."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "position",
+            "type": "pubkey"
+          },
+          {
+            "name": "current_value_usdc",
+            "type": "u64"
+          },
+          {
+            "name": "as_of_slot",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "AdapterWithdrawEvent",
+      "docs": [
+        "Emitted by `adapter_withdraw` (spec §adapter_withdraw)."
+      ],
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "position",
+            "type": "pubkey"
+          },
+          {
+            "name": "shares_burned",
+            "type": "u64"
+          },
+          {
+            "name": "amount_out",
+            "type": "u64"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,43 @@
+[toolchain]
+anchor_version = "0.31.1"
+solana_version = "2.2.20"
+
+[features]
+resolution = true
+skip-lint = false
+
+# Program IDs are synced from target/deploy/*-keypair.json via `anchor keys sync`
+# after the first build. Placeholders below are replaced on sync.
+[programs.localnet]
+dispatcher = "CDit4o9LeqFaxEMkS7mHDKkUxrhhr8K9kH4CYfqZxEok"
+kamino_usdc = "BSwbiwogeLmYLYXfYb3t4WWNDD3x5tJHCZyZJLVRLuf9"
+marginfi_usdc = "5C6BQ9tJdyUjP8Dz1MxHXtYF8EuXX8nXZPLwZvwc6d93"
+jupiter_lp = "DwqPJD68SpERitR6NNp9AaizEn5W7ERbDArCkPJqwmzq"
+maple_syrup = "3Y1AddXDAnzw14UYpjLByWSJYTncMj7uFNJN9Egwzqh9"
+drift_if = "CUa5e7HetWzXfn7czcFSsr8gd6SrfaK2dqzTC11jeGnF"
+
+[programs.devnet]
+dispatcher = "CDit4o9LeqFaxEMkS7mHDKkUxrhhr8K9kH4CYfqZxEok"
+kamino_usdc = "BSwbiwogeLmYLYXfYb3t4WWNDD3x5tJHCZyZJLVRLuf9"
+marginfi_usdc = "5C6BQ9tJdyUjP8Dz1MxHXtYF8EuXX8nXZPLwZvwc6d93"
+jupiter_lp = "DwqPJD68SpERitR6NNp9AaizEn5W7ERbDArCkPJqwmzq"
+maple_syrup = "3Y1AddXDAnzw14UYpjLByWSJYTncMj7uFNJN9Egwzqh9"
+drift_if = "CUa5e7HetWzXfn7czcFSsr8gd6SrfaK2dqzTC11jeGnF"
+
+[registry]
+url = "https://api.apr.dev"
+
+[provider]
+cluster = "Localnet"
+wallet = "~/.config/solana/id.json"
+
+[scripts]
+test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 'tests/unit/**/*.ts'"
+test-fork = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 'tests/fork/**/*.ts'"
+
+# Fast unit tests spawn a bare local validator (no clones).
+[test]
+startup_wait = 20000
+
+[test.validator]
+url = "https://api.mainnet-beta.solana.com"

@@ -1,0 +1,22 @@
+[package]
+name = "drift-if"
+version = "1.0.0"
+description = "Reference yield adapter: Drift Insurance Fund (USDC) staking"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "drift_if"
+
+[features]
+default = []
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+
+[dependencies]
+anchor-lang = "0.31.1"
+anchor-spl = "0.31.1"
+adapter-interface = { path = "../../crates/adapter-interface" }

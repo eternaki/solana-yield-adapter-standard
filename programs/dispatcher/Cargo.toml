@@ -1,0 +1,22 @@
+[package]
+name = "dispatcher"
+version = "1.0.0"
+description = "Yield adapter dispatcher: router + governance-gated registry"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "dispatcher"
+
+[features]
+default = []
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+
+[dependencies]
+anchor-lang = "0.31.1"
+anchor-spl = "0.31.1"
+adapter-interface = { path = "../../crates/adapter-interface" }

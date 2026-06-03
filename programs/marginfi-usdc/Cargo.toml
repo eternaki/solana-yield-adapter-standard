@@ -1,0 +1,22 @@
+[package]
+name = "marginfi-usdc"
+version = "1.0.0"
+description = "Reference yield adapter: MarginFi USDC bank"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "marginfi_usdc"
+
+[features]
+default = []
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+
+[dependencies]
+anchor-lang = "0.31.1"
+anchor-spl = "0.31.1"
+adapter-interface = { path = "../../crates/adapter-interface" }

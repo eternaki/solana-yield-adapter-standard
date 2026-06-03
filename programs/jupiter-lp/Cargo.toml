@@ -1,0 +1,22 @@
+[package]
+name = "jupiter-lp"
+version = "1.0.0"
+description = "Reference yield adapter: Jupiter Perps JLP liquidity pool"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+name = "jupiter_lp"
+
+[features]
+default = []
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-idl = []
+no-log-ix-name = []
+idl-build = ["anchor-lang/idl-build", "anchor-spl/idl-build"]
+
+[dependencies]
+anchor-lang = "0.31.1"
+anchor-spl = "0.31.1"
+adapter-interface = { path = "../../crates/adapter-interface" }

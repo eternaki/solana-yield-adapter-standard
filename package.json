@@ -1,0 +1,29 @@
+{
+  "name": "solana-yield-adapter-standard",
+  "version": "1.0.0",
+  "license": "MIT",
+  "description": "A standard interface for Solana yield adapters: a dispatcher, an on-chain registry, and five reference adapters.",
+  "scripts": {
+    "lint": "cargo clippy --all-targets -- -D warnings",
+    "build": "anchor build",
+    "test-fork": "bash scripts/fork-test.sh"
+  },
+  "dependencies": {
+    "@coral-xyz/anchor": "0.31.1"
+  },
+  "devDependencies": {
+    "@solana/spl-token": "^0.4.6",
+    "@solana/web3.js": "^1.95.0",
+    "@types/bn.js": "^5.1.5",
+    "@types/chai": "^4.3.11",
+    "@types/mocha": "^10.0.6",
+    "@types/node": "^25.9.1",
+    "anchor-bankrun": "^0.5.0",
+    "chai": "^4.4.1",
+    "mocha": "^10.3.0",
+    "solana-bankrun": "^0.4.0",
+    "ts-mocha": "^10.0.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.4.2"
+  }
+}
