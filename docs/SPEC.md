@@ -37,6 +37,16 @@ after it are *adapter-specific* and forwarded verbatim from the dispatcher's
 All four take a trailing `adapter_data: Vec<u8>` (≤ `MAX_ADAPTER_DATA_LEN` = 256) for
 optional adapter-specific config; pass empty when unused.
 
+**Sources with and without a deposit instruction.** "Deposit into the source" is
+interpreted broadly. An adapter MAY wrap a protocol that exposes its own deposit/withdraw
+instructions (Kamino, MarginFi, Drift, Jupiter Perps), OR a **swap-and-hold** source where
+entering the position means acquiring a yield-bearing token on a DEX — e.g. Maple's
+syrupUSDC, a Chainlink CCIP cross-chain token that has **no Solana-native deposit program**:
+`adapter_deposit` swaps USDC→syrupUSDC, `adapter_withdraw` swaps back, and
+`adapter_current_value` prices the held token from the pool. The four-instruction interface
+is identical either way; only the adapter-specific accounts (`4+`) differ. This keeps the
+standard extensible to RWA / cross-chain yield tokens, not just on-chain lending markets.
+
 ### `adapter_initialize(adapter_data)`
 
 Creates the adapter-owned `AdapterState` PDA and any token accounts the adapter needs.

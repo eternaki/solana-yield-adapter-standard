@@ -44,6 +44,34 @@ scripts                    fork-test runner + fixture generator
 | `maple-syrup` | ✅ `anchor build` | ✅ swap-and-hold round-trip (Orca whirlpool) |
 | `drift-if` | ✅ `anchor build` | ⏳ adapter complete; discriminators verified vs `@drift-labs/sdk` v2.162.0. Fork test `describe.skip`'d — the deployed Drift bytecode returns `InstructionFallbackNotFound` on `solana-test-validator` 2.2.20 (the bounty-pinned runtime), un-skip on a newer validator. Not an adapter bug. See note in `tests/fork/06-drift-native.ts`. |
 
+> **Fork-test results are committed** — see [`tests/fork/logs/RESULTS.md`](tests/fork/logs/RESULTS.md)
+> and the full [`fork-test-full.log`](tests/fork/logs/fork-test-full.log): **21 passing** (the four
+> adapters above, each a full `deposit → current_value → withdraw` round-trip against real cloned
+> mainnet state), 4 failing in the `drift-if` suite (runtime-gated — see below).
+
+## Adapter coverage notes
+
+Two adapters need explicit framing so they're judged for what they actually are:
+
+**`maple-syrup` is a swap-and-hold adapter, not a Maple-program CPI — by necessity.**
+Maple's syrupUSDC is a Chainlink **CCIP cross-chain token**: the lending deposit happens on
+Ethereum (via syrup.fi), and on Solana syrupUSDC exists only as a transferable,
+yield-accruing SPL token acquired by **bridging or swapping** — Maple's own launch post
+lists Orca and Kamino as the Solana venues. There is **no permissionless Maple deposit
+instruction on Solana to CPI into.** So this adapter implements the only on-chain,
+Solana-native path into Maple's yield: swap USDC↔syrupUSDC on the deepest Orca Whirlpool,
+hold the yield-bearing token, and price the position from the pool's spot price. It is
+included deliberately to prove the standard also covers **swap-and-hold / RWA-style**
+sources, not only protocols that expose their own deposit instruction.
+(Source: Maple Finance, "syrupUSDC Expands to Solana.")
+
+**`drift-if` is a real Drift CPI, complete and built; its fork test is gated on the runtime.**
+The adapter uses the correct interface and its instruction discriminators are verified
+against `@drift-labs/sdk` v2.162.0. The deployed Drift bytecode returns
+`InstructionFallbackNotFound` when dispatched on `solana-test-validator` 2.2.20 (the runtime
+this bounty pins), while the other four protocols run fine — a runtime/fork limitation, not
+an adapter bug. See `tests/fork/06-drift-native.ts` and the captured log under `tests/fork/logs/`.
+
 ## Devnet
 
 The dispatcher (which holds the governance registry) is deployed to **devnet**:

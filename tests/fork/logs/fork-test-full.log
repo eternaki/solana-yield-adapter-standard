@@ -1,0 +1,116 @@
+▸ refreshing patched reserve/scope fixtures from mainnet
+wrote reserve/scope/oracle/doves patched fixtures
+▸ launching local fork validator (no warp; slots patched low)
+▸ waiting for validator health
+▸ funding + deploying programs
+Waiting for fees to stabilize 1...
+Program Id: CDit4o9LeqFaxEMkS7mHDKkUxrhhr8K9kH4CYfqZxEok
+
+Signature: 4yskSStpZQ8n7HakeXsKU9bivKzS3nLBZv4hkHkLqqAEycmVH7Kd8hgKmnAq4MgCv4yXTLcuHcDEUA5AKmGCw7Cq
+
+Program Id: BSwbiwogeLmYLYXfYb3t4WWNDD3x5tJHCZyZJLVRLuf9
+
+Signature: 2aWje6QwMoZVVTW8PoMz5gzCWpDsLXPveHg35HQ8ggJrv472BX6odvMf38Vxvd5tSfnSJDkuqwCg9MSnQREKyBhF
+
+Program Id: 5C6BQ9tJdyUjP8Dz1MxHXtYF8EuXX8nXZPLwZvwc6d93
+
+Signature: 4NkE1pFVa2Jqw1ZP8RDU1LTRRFxPF118Y1TDDWefZ2NFzpZJyCj2UkbiyM55ADdst7uRhuSCdJ61fkk1C1jfr7iU
+
+Program Id: DwqPJD68SpERitR6NNp9AaizEn5W7ERbDArCkPJqwmzq
+
+Signature: 58odEwu5QmKHr2rbjovFiwMDEEGLvHmdi7hciwGpmiPfe36bH58uGDkAqWJrJBEbhDZy3CRFKrhCE5uKjXEH235E
+
+Program Id: 3Y1AddXDAnzw14UYpjLByWSJYTncMj7uFNJN9Egwzqh9
+
+Signature: 42yBeQBnQyNyqd5vcLt9D4MA7SC7R7vqKDipsRSXAviDC6ceNQS68q2xTeH7rE8d1733QkPBaT5sWzECGWYA5j4W
+
+Program Id: CUa5e7HetWzXfn7czcFSsr8gd6SrfaK2dqzTC11jeGnF
+
+Signature: 3i7bCmac3ByuWqN5vGBHRdyq2C1RHoRbm7vdkuLXxH1tbnK4YVtF4og4HTzPjZ7jsVMtC3nohsEgKfvH6ddNY1Sr
+
+▸ running e2e (all adapters)
+yarn run v1.22.19
+$ /Users/daniillogachev/oxar-adapter-audit/yield-adapter-standard/node_modules/.bin/ts-mocha -p ./tsconfig.json -t 1000000 'tests/fork/*-native.ts'
+
+
+  kamino-usdc · native mainnet-fork e2e
+    ✔ initializes registry + whitelists the adapter (4250ms)
+    ✔ opens a position (702ms)
+    ✔ deposits 100 USDC into Kamino (788ms)
+    ✔ reports current value ≈ deposit (via return data)
+    ✔ withdraws all shares back to USDC (840ms)
+
+  marginfi-usdc · native mainnet-fork e2e
+    ✔ initializes registry + whitelists the adapter (1170ms)
+    ✔ opens a position (creates MarginFi account via CPI) (1364ms)
+    ✔ deposits 100 USDC into MarginFi (1350ms)
+    ✔ reports current value ≈ deposit (via return data) (115ms)
+    ✔ withdraws all back to USDC (841ms)
+
+  jupiter-lp · native mainnet-fork e2e
+    ✔ initializes registry + whitelists the adapter (1180ms)
+    ✔ opens a position (creates JLP token account) (665ms)
+    ✔ deposits 100 USDC into the JLP pool (757ms)
+    ✔ reports current value ≈ deposit (via return data)
+    ✔ withdraws all JLP back to USDC (719ms)
+
+  maple-syrup · native mainnet-fork e2e
+    ✔ initializes registry + whitelists the adapter (807ms)
+    ✔ opens a position (creates syrupUSDC account) (616ms)
+    ✔ deposits 100 USDC (swaps into syrupUSDC) (587ms)
+    ✔ reports current value ≈ deposit (via return data)
+    ✔ withdraws all syrupUSDC back to USDC (546ms)
+
+  drift-if · native mainnet-fork e2e
+    ✔ initializes registry + whitelists the adapter (1630ms)
+    1) opens a position (creates user-stats + IF-stake via CPI)
+    2) deposits 100 USDC into the insurance fund
+    3) reports current value ≈ deposit (via return data)
+    4) withdraws all IF shares back to USDC
+
+
+  21 passing (24s)
+  4 failing
+
+  1) drift-if · native mainnet-fork e2e
+       opens a position (creates user-stats + IF-stake via CPI):
+     Error: AnchorError occurred. Error Code: InstructionFallbackNotFound. Error Number: 101. Error Message: Fallback functions are not supported.
+      at Function.parse (node_modules/@coral-xyz/anchor/src/error.ts:136:14)
+      at translateError (node_modules/@coral-xyz/anchor/src/error.ts:277:35)
+      at MethodsBuilder.rpc [as _rpcFn] (node_modules/@coral-xyz/anchor/src/program/namespace/rpc.ts:35:29)
+      at processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at Context.<anonymous> (tests/fork/06-drift-native.ts:86:5)
+
+  2) drift-if · native mainnet-fork e2e
+       deposits 100 USDC into the insurance fund:
+     Error: AnchorError caused by account: position. Error Code: AccountNotInitialized. Error Number: 3012. Error Message: The program expected this account to be already initialized.
+      at Function.parse (node_modules/@coral-xyz/anchor/src/error.ts:168:14)
+      at translateError (node_modules/@coral-xyz/anchor/src/error.ts:277:35)
+      at MethodsBuilder.rpc [as _rpcFn] (node_modules/@coral-xyz/anchor/src/program/namespace/rpc.ts:35:29)
+      at processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at Context.<anonymous> (tests/fork/06-drift-native.ts:100:5)
+
+  3) drift-if · native mainnet-fork e2e
+       reports current value ≈ deposit (via return data):
+     AssertionError: no return data; logs:
+Program ComputeBudget111111111111111111111111111111 invoke [1]
+Program ComputeBudget111111111111111111111111111111 success
+Program CDit4o9LeqFaxEMkS7mHDKkUxrhhr8K9kH4CYfqZxEok invoke [1]
+Program log: Instruction: CurrentValue
+Program log: AnchorError caused by account: position. Error Code: AccountNotInitialized. Error Number: 3012. Error Message: The program expected this account to be already initialized.
+Program CDit4o9LeqFaxEMkS7mHDKkUxrhhr8K9kH4CYfqZxEok consumed 4844 of 1399850 compute units
+Program CDit4o9LeqFaxEMkS7mHDKkUxrhhr8K9kH4CYfqZxEok failed: custom program error: 0xbc4: expected null not to be null
+      at Context.<anonymous> (tests/fork/06-drift-native.ts:119:88)
+      at processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+  4) drift-if · native mainnet-fork e2e
+       withdraws all IF shares back to USDC:
+     Error: Account does not exist or has no data Tab29dhfLrYJmu9McjftgJuEEyYisVzzWyRbfjA9isU
+      at AccountClient.fetch (node_modules/@coral-xyz/anchor/src/program/namespace/account.ts:168:13)
+      at processTicksAndRejections (node:internal/process/task_queues:105:5)
+      at Context.<anonymous> (tests/fork/06-drift-native.ts:125:16)
+
+
+
+error Command failed with exit code 4.
+info Visit https://yarnpkg.com/en/docs/cli/run for documentation about this command.
